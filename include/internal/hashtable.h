@@ -542,17 +542,6 @@ ossl_htable_init_buckets(OSSL_QUEUE *buckets, size_t n)
  * for libcrypto and the FIPS module only; libssl cannot link against them.
  */
 
-/*
- * A reader's load of a published link. ossl_rcu_deref() is a function call
- * around one load; where that load is the compiler's own atomic (the same
- * condition under which crypto/threads_pthread.c uses it), do it in place.
- */
-#if defined(OSSL_USE_GCC_ATOMICS)
-#define ossl_htable_rcu_load_(pp) __atomic_load_n((pp), __ATOMIC_ACQUIRE)
-#else
-#define ossl_htable_rcu_load_(pp) ((OSSL_QNODE *)ossl_rcu_deref(pp))
-#endif
-
 /* Publish |n| at the head of |q|. Writer side. */
 static ossl_unused ossl_inline void ossl_queue_add_head_rcu(OSSL_QUEUE *q,
     OSSL_QNODE *n)

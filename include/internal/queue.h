@@ -14,12 +14,7 @@
 #include <stddef.h>
 #include <assert.h>
 #include <openssl/e_os2.h>
-
-#define OSSL_CONTAINER_OF(ptr, type, member) \
-    ((type *)((char *)(ptr) - offsetof(type, member)))
-
-#define OSSL_CONTAINER_OF_SAFE(ptr, type, member) \
-    ((ptr) == NULL ? NULL : OSSL_CONTAINER_OF(ptr, type, member))
+#include "internal/common.h"
 
 /*
  * A node's |prev| does not point at the node before it but at the pointer that

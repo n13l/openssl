@@ -112,6 +112,12 @@ __owur static ossl_inline int ossl_assert_int(int expr, const char *exprstr,
 #define DECIMAL_SIZE(type) ((sizeof(type) * 8 + 2) / 3 + 1)
 #define HEX_SIZE(type) (sizeof(type) * 2)
 
+#define OSSL_CONTAINER_OF(ptr, type, member) \
+    ((type *)((char *)(ptr) - offsetof(type, member)))
+
+#define OSSL_CONTAINER_OF_SAFE(ptr, type, member) \
+    ((ptr) == NULL ? NULL : OSSL_CONTAINER_OF(ptr, type, member))
+
 #define c2l(c, l) (l = ((unsigned long)(*((c)++))), \
     l |= (((unsigned long)(*((c)++))) << 8),        \
     l |= (((unsigned long)(*((c)++))) << 16),       \
