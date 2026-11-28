@@ -3338,8 +3338,8 @@ SSL *ossl_dtls_listener_find_established_conn(DTLS_LISTENER *dl,
     const DGRAM_URXE *urxe);
 /**
  * Unlink a connection created by listener |s| from whichever of its lookup
- * tables it is registered in, and drop it from the listener's run and timer
- * queues.
+ * tables it is registered in, drop it from the listener's run and timer
+ * queues, and clear its listener_rx: the caller frees that queue next.
  * Takes the listener mutex. Does nothing if |s| is not a DTLS listener or
  * |conn| is NULL.
  *

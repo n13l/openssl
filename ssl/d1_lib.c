@@ -3394,6 +3394,13 @@ SSL *ossl_dtls_listener_find_established_conn(DTLS_LISTENER *dl,
  * the application owns, by ossl_ssl_connection_reset() when it cannot
  * restore the listener association, and by SSL_accept_connection() when
  * ownership fails to transfer.
+ *
+ * Every one of them frees the connection's input queue next, so the
+ * connection's alias for it (listener_rx) is cleared here, in the same
+ * critical section. The listener's other threads read that pointer and use
+ * the queue with the mutex held, having found the connection in a table or on
+ * a queue: once the mutex is released here, none of them is still using the
+ * queue and none can find the connection again, and the caller may free it.
  */
 void ossl_dtls_listener_unregister_conn(SSL *s, SSL *conn)
 {
@@ -3407,8 +3414,10 @@ void ossl_dtls_listener_unregister_conn(SSL *s, SSL *conn)
     sc = SSL_CONNECTION_FROM_SSL_ONLY(conn);
 
     ossl_crypto_mutex_lock(dl->mutex);
-    if (sc != NULL)
+    if (sc != NULL) {
         dtls_listener_unqueue(dl, sc);
+        sc->listener_rx = NULL;
+    }
     ossl_dgram_conn_lookup_unregister(conn);
     ossl_crypto_mutex_unlock(dl->mutex);
 }

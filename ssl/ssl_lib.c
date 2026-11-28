@@ -706,13 +706,12 @@ int ossl_ssl_connection_reset(SSL *s)
         if (!s->method->ssl_init(s)) {
 #if !defined(OPENSSL_NO_DTLS) && !defined(OPENSSL_NO_SOCK)
             if (is_dtls_listener_conn) {
-                DTLS_LISTENER *dl = (DTLS_LISTENER *)saved_listener;
-
-                /* The detached connection cannot unregister itself on free. */
+                /*
+                 * The detached connection cannot unregister itself on free.
+                 * Unregistering also clears sc->listener_rx, under the
+                 * listener mutex, so the queue can be freed after it.
+                 */
                 ossl_dtls_listener_unregister_conn(saved_listener, s);
-                ossl_crypto_mutex_lock(dl->mutex);
-                sc->listener_rx = NULL;
-                ossl_crypto_mutex_unlock(dl->mutex);
                 ossl_dtls_rx_free(saved_rx);
                 /*
                  * A pending connection, reset by the listener's own drive,
