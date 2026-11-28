@@ -38,7 +38,7 @@
  *   table is empty and ready for use.
  * - Walking forward follows |head| and |next| only, to a NULL: a node can be
  *   published to readers that hold no lock with a single store
- *   (DEFINE_HTABLE_RCU_OF of internal/hashtable.h).
+ *   (DEFINE_HTABLE_RCU_OF of internal/rcu/hashtable.h).
  *
  * What it gives up: a queue has no tail and no count, and cannot be walked
  * backwards from its end. A caller that needs the tail keeps it itself

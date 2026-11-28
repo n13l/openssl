@@ -10,6 +10,7 @@
 #include "internal/namemap.h"
 #include "internal/tsan_assist.h"
 #include "internal/hashtable.h"
+#include "internal/rcu/hashtable.h"
 #include "internal/sizes.h"
 #include "crypto/context.h"
 #include "crypto/evp.h"

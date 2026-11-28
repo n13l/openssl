@@ -24,6 +24,7 @@
 #include "crypto/siphash.h"
 #include "crypto/x509.h"
 #include "internal/hashtable.h"
+#include "internal/rcu/hashtable.h"
 #include "crypto/asn1/asn1_local.h"
 #include "internal/nelem.h"
 #include "testutil.h"

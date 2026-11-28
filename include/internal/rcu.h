@@ -12,6 +12,7 @@
 #pragma once
 
 #include "crypto/context.h"
+#include "internal/threads_common.h"
 
 typedef void (*rcu_cb_fn)(void *data);
 
@@ -36,14 +37,17 @@ void ossl_rcu_assign_uptr(void **p, void **v);
 #define ossl_rcu_assign_ptr(p, v) ossl_rcu_assign_uptr((void **)p, (void **)v)
 
 /*
- * A reader's load of a published link. ossl_rcu_deref() is a function call
- * around one load; where that load is the compiler's own atomic (the same
- * condition under which crypto/threads_pthread.c uses it), do it in place.
+ * ossl_rcu_deref() for a hot path. ossl_rcu_deref() is a function call around
+ * one load of a published pointer; where that load is the compiler's own
+ * atomic (the same condition under which crypto/threads_pthread.c uses it),
+ * this does it in place, with the same acquire ordering. |p| points at the
+ * pointer to load. The result has that pointer's type where the load is done
+ * in place and is a void * otherwise.
  */
 #if defined(OSSL_USE_GCC_ATOMICS)
-#define ossl_htable_rcu_load_(pp) __atomic_load_n((pp), __ATOMIC_ACQUIRE)
+#define ossl_rcu_deref_inline(p) __atomic_load_n((p), __ATOMIC_ACQUIRE)
 #else
-#define ossl_htable_rcu_load_(pp) ((OSSL_QNODE *)ossl_rcu_deref(pp))
+#define ossl_rcu_deref_inline(p) ossl_rcu_deref(p)
 #endif
 
 #endif

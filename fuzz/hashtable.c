@@ -47,6 +47,7 @@
 #include <openssl/err.h>
 #include "crypto/siphash.h"
 #include "internal/hashtable.h"
+#include "internal/rcu/hashtable.h"
 #include "fuzzer.h"
 
 /*
